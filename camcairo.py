@@ -7,9 +7,28 @@ import cairo
 import pyfakewebcam
 import time
 import cv2
+import hrm
+import logging
+
+DEV_IN = "/dev/video0"
+DEV_OUT = "/dev/video20"
+WIDTH, HEIGHT, FPS = 1280, 720, 30
+HRMMAC = "db:e8:d7:91:5a:d1"
+
+hrm.log.setLevel(logging.INFO)
+
+hrmt = hrm.HRMThread(addr = HRMMAC)
+curhr = 0
 
 def paint(ctx, w, h):
-    txt = "--- bpm"
+    global curhr
+    
+    try:
+        curhr = hrmt.queue.get(block = False)
+    except:
+        pass
+    
+    txt = f"{curhr} bpm"
     
     ctx.select_font_face("Ubuntu", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
     fsz = h // 6
@@ -25,16 +44,13 @@ def paint(ctx, w, h):
     ctx.move_to(xp - fsz // 10, yp - fsz // 10)
     ctx.show_text(txt)
 
-DEV_IN = "/dev/video0"
-DEV_OUT = "/dev/video20"
-WIDTH, HEIGHT, FPS = 1280, 720, 30
-
 fake = pyfakewebcam.FakeWebcam(DEV_OUT, WIDTH, HEIGHT)
 
 Gst.init(None)
 pipeline = Gst.parse_launch(f"v4l2src device={DEV_IN} ! image/jpeg, width=(int){WIDTH}, height=(int){HEIGHT}, framerate={FPS}/1 ! jpegdec ! videoconvert ! video/x-raw, format=BGRA ! appsink name=sink")
 appsink = pipeline.get_by_name("sink")
 appsink.set_property("emit-signals", True)
+hrmt.start()
 
 t = 0
 
