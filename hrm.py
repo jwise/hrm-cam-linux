@@ -10,6 +10,8 @@
     interpreted according to the Bluetooth specification for HRM and saved in a
     sqlite database for future processing. In case the connection with the BLE
     HRM is lost, connection is restablished.
+    
+    hacked up by Joshua Wise
 
     :copyright: (c) 2015 by fg1
     :license: BSD, see LICENSE for more details
