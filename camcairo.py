@@ -9,12 +9,21 @@ import time
 import cv2
 
 def paint(ctx, w, h):
-    ctx.move_to(0, 0)
-    ctx.line_to(w, h)
-    ctx.close_path()
-    ctx.set_source_rgb(255, 0, 0)
-    ctx.set_line_width(15)
-    ctx.stroke()    
+    txt = "--- bpm"
+    
+    ctx.select_font_face("Ubuntu", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
+    fsz = h // 6
+    ctx.set_font_size(fsz)
+
+    ctx.set_source_rgba(0, 0, 0, 0.6)
+    xp = w // 10
+    yp = h - h // 10
+    ctx.move_to(xp, yp)
+    ctx.show_text(txt)
+    
+    ctx.set_source_rgba(0.9, 0.2, 0.2, 1.0)
+    ctx.move_to(xp - fsz // 10, yp - fsz // 10)
+    ctx.show_text(txt)
 
 DEV_IN = "/dev/video0"
 DEV_OUT = "/dev/video20"
