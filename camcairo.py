@@ -52,10 +52,11 @@ appsink = pipeline.get_by_name("sink")
 appsink.set_property("emit-signals", True)
 hrmt.start()
 
-t = 0
+t = time.time()
+frames_since = 0
 
 def new_sample(sink):
-    global t
+    global t, frames_since
     sample = sink.pull_sample()
     caps = sample.get_caps()
     h = caps.get_structure(0).get_value("height")
@@ -78,9 +79,12 @@ def new_sample(sink):
     rgb = cv2.cvtColor(arr, cv2.COLOR_BGRA2RGB)
     fake.schedule_frame(rgb)
 
-    now = time.time()
-    print(f"... {w}x{h}, {1 / (now - t)} fps ...")
-    t = now
+    frames_since = frames_since + 1
+    if frames_since == 60:
+        now = time.time()
+        print(f"... {w}x{h}, {frames_since / (now - t)} fps ...")
+        t = now
+        frames_since = 0
 
     return False
 
