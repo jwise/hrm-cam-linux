@@ -199,7 +199,7 @@ class HRMThread(threading.Thread):
                 try:
                     gt.expect(hr_expect, timeout=10)
 
-                except pexpect.TIMEOUT:
+                except (pexpect.TIMEOUT, pexpect.exceptions.EOF) as e:
                     # If the timer expires, it means that we have lost the
                     # connection with the HR monitor
                     log.warn("Connection lost with " + self.addr + ". Reconnecting.")
