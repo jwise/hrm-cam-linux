@@ -230,7 +230,8 @@ class HRMThread(threading.Thread):
 
                 log.debug(res)
 
-                self.queue.put(res["hr"])
+                if res and "hr" in res:
+                    self.queue.put(res["hr"])
 
         # We quit close the BLE connection properly
         gt.sendline("quit")
